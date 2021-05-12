@@ -59,11 +59,11 @@
                            <td><label><?= $doctor->accid ?></label></td>
                            <td><img src="<?= $assets ?>dist/img/d3.png" class="img-circle" height="30" width="30"></td>
                            <td><?= "DR. <strong>{$doctor->lastname}</strong>, {$doctor->firstname}" ?></td>
-                           <td><?= $Me->Core->GetDepartment($doctor->department)->department ?></td>
+                           <td><?= @$Me->Core->GetDepartment($doctor->department)->department ?></td>
                            <td><?= $doctor->email ?></td>
                            <td><?= $doctor->mobile ?></td>
                            <td>
-                              <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#DeleteRequest_<?= $doctor->accid; ?>"><i class="fa fa-pencil"></i></button>
+                              <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#EditRequest_<?= $doctor->accid; ?>"><i class="fa fa-pencil"></i></button>
                               <div id="EditRequest_<?= $doctor->accid; ?>" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                                  <div class="modal-dialog modal-dialog-centered" role="dialog">
                                     <div class="modal-content">
@@ -72,7 +72,7 @@
                                        </div>
 
                                        <div class="modal-body">
-                                          <form action="/form/department/<?= $department->id; ?>/edit" method="POST">
+                                          <form action="/form/department/<?= $doctor->accid; ?>/edit" method="POST">
 
                                              <div class="col-sm-6 form-group">
                                                 <label>Picture upload</label>
@@ -91,49 +91,45 @@
 
                                              <div class="col-sm-6 form-group">
                                                 <label>First Name</label>
-                                                <input type="text" class="form-control" name="firstname" placeholder="Enter firstname" required>
+                                                <input type="text" class="form-control" name="firstname" value="<?=$doctor->firstname ?>" placeholder="Enter firstname" required>
                                              </div>
                                              <div class="col-sm-6 form-group">
                                                 <label>Last Name(Surname)</label>
-                                                <input type="text" class="form-control" name="lastname" placeholder="Enter Lastname" required>
+                                                <input type="text" class="form-control" name="lastname" value="<?=$doctor->lastname ?>" placeholder="Enter Lastname" required>
                                              </div>
 
                                              <div class="col-sm-12 col-md-12 alert alert-success">
                                                 <div class="row">
                                                    <div class="col-sm-6 form-group">
                                                       <label>Email</label>
-                                                      <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
-                                                   </div>
-                                                   <div class="col-sm-6 form-group">
-                                                      <label>Password</label>
-                                                      <input type="text" class="form-control" name="password" readonly="readonly" value="<?= $password ?>" required>
+                                                      <input type="email" class="form-control" name="email" value="<?=$doctor->email ?>" placeholder="Enter Email" required>
                                                    </div>
                                                 </div>
                                              </div>
                                              <div class="col-sm-6 form-group">
                                                 <label>Mobile</label>
-                                                <input type="text" class="form-control" placeholder="Enter Mobile" name="mobile" required>
+                                                <input type="text" class="form-control" placeholder="Enter Mobile" name="mobile" value="<?=$doctor->mobile ?>" required>
                                              </div>
                                              <div class="col-sm-6 form-group">
                                                 <label>Date of Birth</label>
-                                                <input name="date_of_birth" class="form-control" type="date" id="date_of_birth">
+                                                <input name="date_of_birth" value="<?=$doctor->date_of_birth ?>" class="form-control" type="date" id="date_of_birth">
                                              </div>
 
                                              <div class="col-sm-6 form-group">
                                                 <label>Sex</label><br>
                                                 <label class="radio-inline">
-                                                   <input type="radio" name="sex" value="Male" checked="checked">Male</label>
-                                                <label class="radio-inline"><input type="radio" name="sex" value="Female">Female</label>
+                                                   <input type="radio" name="sex" value="Male" <?=$doctor->sex == "Male"? "checked='checked'":""?>>Male</label>
+                                                <label class="radio-inline"><input type="radio" name="sex" value="Female" <?=$doctor->sex == "Female"? "checked='checked'":""?>>Female</label>
                                              </div>
 
                                              <div class="col-sm-6 form-check">
                                                 <label>Status</label><br>
-                                                <label class="radio-inline"><input type="radio" name="status" value="0" checked="checked">Inactive</label>
-                                                <label class="radio-inline"><input type="radio" name="status" value="1">Active</label>
+                                                <label class="radio-inline"><input type="radio" name="status" value="0" <?=$doctor->status ? "":"checked='checked'"?>>Inactive</label>
+                                                <label class="radio-inline"><input type="radio" name="status" value="1" <?=$doctor->status ? "checked='checked'":""?>>Active</label>
                                              </div>
 
                                              <div class="reset-button">
-                                                <button type="submit" class="btn btn-success">Save Department</button>
+                                                <button type="submit" class="btn btn-success">Save Doctor</button>
                                              </div>
                                           </form>
                                        </div>

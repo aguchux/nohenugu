@@ -94,7 +94,7 @@
                               </div>
                            </td>
                            <td>
-                              <a href="javascript:;" class="btn-link" data-toggle="modal" data-target="#DeleteRequest_<?= $department->id; ?>">Delete</a>
+                              <a href="javascript:;" class="btn-link text-danger" data-toggle="modal" data-target="#DeleteRequest_<?= $department->id; ?>">Delete</a>
                               <div id="DeleteRequest_<?= $department->id; ?>" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                                  <div class="modal-dialog modal-dialog-centered" role="dialog">
                                     <div class="modal-content">

@@ -256,6 +256,31 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 
 
 
+$Route->add('/form/doctor/{accid}/{action}', function ($accid, $action) {
+	$Core = new Apps\Core;
+	$Template = new Apps\Template;
+	$data = $Core->post($_POST);
+	$Db = new Apps\MysqliDb;
+	switch ($action) {
+		case 'edit':
+			$done = $Db->where("accid", $accid)->update("noh_doctors", [
+				"firstname" => $data->firstname,
+				"lastname" => $data->lastname,
+				"department" => $data->department,
+				"sex" => $data->department,
+				"enabled" => $data->status,
+				"email" => $data->email,
+				"date_of_birth" => $data->date_of_birth
+			]);
+			break;
+		case 'delete':
+			$del = $Db->where("accid", $accid)->delete("noh_doctors", 1);
+			break;
+	}
+	$Template->redirect("/myhq/doctors");
+}, 'POST');
+
+
 
 $Route->add('/form/department/{id}/{action}', function ($id, $action) {
 
