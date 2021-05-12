@@ -63,7 +63,7 @@
                            <td><?= $doctor->email ?></td>
                            <td><?= $doctor->mobile ?></td>
                            <td>
-                              <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#EditRequest_<?= $doctor->accid; ?>"><i class="fa fa-pencil"></i></button>
+                              <button type="button" class="btn btn-info btn-xs" ><i class="fa fa-pencil"></i></button>
                               <div id="EditRequest_<?= $doctor->accid; ?>" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                                  <div class="modal-dialog modal-dialog-centered" role="dialog">
                                     <div class="modal-content">
@@ -72,7 +72,7 @@
                                        </div>
 
                                        <div class="modal-body">
-                                          <form action="/form/department/<?= $doctor->accid; ?>/edit" method="POST">
+                                          <form action="/form/doctor/<?= $doctor->accid; ?>/edit" method="POST">
 
                                              <div class="col-sm-6 form-group">
                                                 <label>Picture upload</label>

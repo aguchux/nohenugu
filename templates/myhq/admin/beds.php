@@ -60,8 +60,64 @@
                         <td><?=$bed->bed;?></td>
                         <td><?= $Core->WardInfo($bed->ward)->ward ?></td>
                         <td><span class="<?= $bed->inuse?"label-danger label":"label-success label" ?>"><?= $bed->inuse?"In Use":"Available" ?></span></td>
-                        <td><button class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Update"><i class="fa fa-pencil" aria-hidden="true"></i></button></td>
-                        <td><button class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="right" title="Delete "><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
+                        <td><button class="btn btn-info btn-xs" data-toggle="modal" data-target="#EditRequest_<?= $bed->id; ?>"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                 <div class="modal-dialog modal-dialog-centered" role="dialog">
+                                    <div class="modal-content">
+                                       <div class="modal-header text-center">
+                                          <h3>Edit Bed <br /><strong class="text-info"><?= $bed->bed ?></br></h3>
+                                       </div>
+
+                                       <div class="modal-body">
+                                          <form action="/form/bed/<?= $bed->id; ?>/edit" method="POST">
+
+                                                   <div class="col-sm-6 form-group">
+                                                      <label>Wards</label>
+                                                      <select class="form-control" id="ward" name="ward" value="<?= $Core->WardInfo($bed->ward)->ward ?>" size="1">
+                                                            <option selected class="test">Select Ward</option>
+                                                         <?php while($ward = mysqli_fetch_object($wards)): ?>
+                                                            <option class="test" value="<?= $ward->id ?>"><?= $ward->ward ?></option>
+                                                            <?php endwhile; ?>
+                                                      </select>
+                                                   </div>
+                                                      
+                                                   <div class="col-sm-6 form-group">
+                                                      <label>Bed Number</label>
+                                                      <input type="text" class="form-control" name="bed" value="<?= $bed->id ?>" placeholder="Bed Number" required>
+                                                   </div>
+
+                                                   <div class="col-sm-6 form-check">
+                                                      <label>Status</label><br>
+                                                      <label class="radio-inline"><input type="radio" name="status" value="0" <?=$bed->inuse ?"":"checked='checked'" ?>>Inactive</label>  
+                                                      <label class="radio-inline"><input type="radio" name="status" value="1" <?=$bed->inuse ?"checked='checked'":"" ?>>Active</label> 
+                                                      </div> 
+                                                   
+                                                      <div class="col-sm-12">
+                                                         <hr/>
+                                                         <button type="submit" class="btn btn-success">Save Bed</button>
+                                                     </div>
+                                                </form>
+                                       </div>
+
+                                    </div>
+                                 </div>
+                        </td>
+                        <td><button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#DeleteRequest_<?= $bed->id; ?>"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                           <div id="DeleteRequest_<?= $bed->id; ?>" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="dialog">
+                                       <div class="modal-content">
+                                          <div class="modal-header text-center">
+                                             <h3>Delete Bed? <br /><strong class="text-danger"><?=$bed->bed ?></h3>
+                                          </div>
+                                          <div class="modal-body text-center">
+                                             <form action="/form/bed/<?= $bed->id; ?>/delete" method="POST">
+                                                <h3>Are you sure you want to Delete this bed?</h3>
+                                                <p><button type="submit" class="btn btn-danger btn-block">Delete Bed</button></p>
+                                             </form>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                        </td>
                      </tr>
 					<? endwhile; ?>
                   </tbody>

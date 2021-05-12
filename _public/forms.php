@@ -302,3 +302,25 @@ $Route->add('/form/department/{id}/{action}', function ($id, $action) {
 	}
 	$Template->redirect("/myhq/departments");
 }, 'POST');
+
+
+$Route->add('/form/bed/{id}/{action}', function ($id, $action) {
+
+	$Core = new Apps\Core;
+	$Template = new Apps\Template;
+	$data = $Core->post($_POST);
+	$Db = new Apps\MysqliDb;
+	switch ($action) {
+		case 'edit':
+			$done = $Db->where("id", $id)->update("noh_beds", [
+				"bed" => $data->bed,
+				"ward" => $data->ward,
+				"inuse" => $data->status	
+			]);
+			break;
+		case 'delete':
+			$del = $Db->where("id", $id)->delete("noh_beds", 1);
+			break;
+	}
+	$Template->redirect("/myhq/beds");
+}, 'POST');
