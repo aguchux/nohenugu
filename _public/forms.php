@@ -7,9 +7,9 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 
 
 	$Template = new Apps\Template;
-	
+
 	if ($cmd == 'login') {
-		
+
 		$Post = $Core->post($_POST);
 		$username = $Post->username;
 		$password = $Post->password;
@@ -19,7 +19,7 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 			$Template->data['accid'] = true;
 			$Template->authorize($Login->accid);
 
-			$Template->setError("Login was successful, welcom back {$Login->surname}","success","/myhq");
+			$Template->setError("Login was successful, welcom back {$Login->surname}", "success", "/myhq");
 
 			$Template->data['myhq_logged_in'] = true;
 			$Template->data['myhq_email'] = $username;
@@ -28,7 +28,6 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		}
 
 		$Template->redirect("/myhq");
-
 	} elseif ($cmd == 'add-page') {
 
 		$Post = $Core->post($_POST);
@@ -147,7 +146,6 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		}
 		$Template->save();
 		$Template->redirect("/myhq/pages");
-
 	} elseif ($cmd == 'add-department') {
 
 		$Post = $Core->post($_POST);
@@ -158,8 +156,6 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 
 		$added = $Core->AddDepartment($department, $description, $status);
 		$Template->redirect("/myhq/departments");
-	
-	
 	} elseif ($cmd == 'add-bed') {
 
 		$Post = $Core->post($_POST);
@@ -169,19 +165,17 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		$status = $Post->status;
 
 		$Db = new Apps\MysqliDb;
-		$bedid = $Db->insert("noh_beds",[
-			"ward"=>$ward,
-			"bed"=>$bed,
-			"enabled"=>$status
+		$bedid = $Db->insert("noh_beds", [
+			"ward" => $ward,
+			"bed" => $bed,
+			"enabled" => $status
 		]);
-		if($bedid){
-			$Template->setError("A new bed was added successfully","success","/myhq/beds");
+		if ($bedid) {
+			$Template->setError("A new bed was added successfully", "success", "/myhq/beds");
 			$Template->redirect("/myhq/beds");
 		}
-		$Template->setError("Bed could not be added, try again","danger","/myhq/beds");
+		$Template->setError("Bed could not be added, try again", "danger", "/myhq/beds");
 		$Template->redirect("/myhq/beds");
-
-
 	} elseif ($cmd == 'add-doctor') {
 
 		$Post = $Core->post($_POST);
@@ -252,4 +246,34 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		$Template->redirect("/myhq/patients");
 	} elseif ($cmd == 'join') {
 	}
+}, 'POST');
+
+
+
+
+
+
+
+
+
+
+$Route->add('/form/department/{id}/{action}', function ($id, $action) {
+
+	$Core = new Apps\Core;
+	$Template = new Apps\Template;
+	$data = $Core->post($_POST);
+	$Db = new Apps\MysqliDb;
+	switch ($action) {
+		case 'edit':
+			$done = $Db->where("id", $id)->update("noh_departments", [
+				"department" => $data->department,
+				"description" => $data->description,
+				"enabled" => $data->status
+			]);
+			break;
+		case 'delete':
+			$del = $Db->where("id", $id)->delete("noh_departments", 1);
+			break;
+	}
+	$Template->redirect("/myhq/departments");
 }, 'POST');

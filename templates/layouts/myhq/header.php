@@ -39,6 +39,8 @@
         =====================================================================-->
     <!-- Start Theme Layout Style
         =====================================================================-->
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+        
     <!-- Theme style -->
     <link rel="stylesheet" type="text/css" href="<?= $assets ?>myhq/editors/tinymce/tinymce.min.css">
     <link href="<?= $assets ?>myhq/dist/css/stylehealth.min.css" rel="stylesheet" type="text/css">

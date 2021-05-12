@@ -64,7 +64,7 @@
         
         <script type="text/javascript" src="<?= $assets ?>myhq/editors/tinymce/editor-tinymce.js"></script>  
           
-        
+        <script type="text/javascript" src="//cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>  
          <script>
                 "use strict"; // Start of use strict
     
@@ -200,6 +200,8 @@
                     pickerPosition: "top",
                     tonesStyle: "radio"
                 });
+
+                $(".DataTable").DataTable();                
 
                 //monthly calender
                 $('#m_calendar').monthly({
