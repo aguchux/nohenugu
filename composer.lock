@@ -23,6 +23,10 @@
             "require": {
                 "php": ">=5.3"
             },
+<<<<<<< HEAD
+=======
+            "default-branch": true,
+>>>>>>> 141a927b507c5ef1ffe7e2b526057ec2c55d9fd5
             "type": "library",
             "autoload": {
                 "classmap": [
@@ -45,6 +49,14 @@
                 "gd",
                 "upload"
             ],
+<<<<<<< HEAD
+=======
+            "support": {
+                "email": "colin@verot.net",
+                "issues": "https://github.com/verot/class.upload.php/issues",
+                "source": "https://github.com/verot/class.upload.php/tree/master"
+            },
+>>>>>>> 141a927b507c5ef1ffe7e2b526057ec2c55d9fd5
             "time": "2021-03-18T14:49:14+00:00"
         }
     ],
@@ -60,5 +72,9 @@
         "php": ">=5.6.36"
     },
     "platform-dev": [],
+<<<<<<< HEAD
     "plugin-api-version": "1.1.0"
+=======
+    "plugin-api-version": "2.0.0"
+>>>>>>> 141a927b507c5ef1ffe7e2b526057ec2c55d9fd5
 }
