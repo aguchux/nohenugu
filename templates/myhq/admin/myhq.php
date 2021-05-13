@@ -92,7 +92,7 @@
                                     </div>
                                     <div class="items pull-left">
                                     <i class="fa fa-users fa-2x"></i>
-                                    <h4>Labratorist</h4>
+                                    <h4>Laboratorist</h4>
                                     </div>
                                 </div>
                             </div>

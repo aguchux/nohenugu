@@ -4,8 +4,6 @@
 $Route->add('/ajax/{cmd}', function ($cmd) {
 
 	$Core = new Apps\Core;
-
-
 	$Template = new Apps\Template;
 
 	if ($cmd == 'login') {
@@ -251,9 +249,29 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 
 
 
-
-
-
+$Route->add('/form/doctor/{accid}/{action}', function ($accid, $action) {
+	$Core = new Apps\Core;
+	$Template = new Apps\Template;
+	$data = $Core->post($_POST);
+	$Db = new Apps\MysqliDb;
+	switch ($action) {
+		case 'edit':
+			$done = $Db->where("accid", $accid)->update("noh_doctors", [
+				"firstname" => $data->firstname,
+				"lastname" => $data->lastname,
+				"department" => $data->department,
+				"sex" => $data->department,
+				"enabled" => $data->status,
+				"email" => $data->email,
+				"date_of_birth" => $data->date_of_birth
+			]);
+			break;
+		case 'delete':
+			$del = $Db->where("accid", $accid)->delete("noh_doctors", 1);
+			break;
+	}
+	$Template->redirect("/myhq/doctors");
+}, 'POST');
 
 
 
@@ -276,4 +294,53 @@ $Route->add('/form/department/{id}/{action}', function ($id, $action) {
 			break;
 	}
 	$Template->redirect("/myhq/departments");
+}, 'POST');
+
+
+$Route->add('/form/bed/{id}/{action}', function ($id, $action) {
+
+	$Core = new Apps\Core;
+	$Template = new Apps\Template;
+	$data = $Core->post($_POST);
+	$Db = new Apps\MysqliDb;
+	switch ($action) {
+		case 'edit':
+			$done = $Db->where("id", $id)->update("noh_beds", [
+				"bed" => $data->bed,
+				"ward" => $data->ward,
+				"inuse" => $data->status	
+			]);
+			break;
+		case 'delete':
+			$del = $Db->where("id", $id)->delete("noh_beds", 1);
+			break;
+	}
+	$Template->redirect("/myhq/beds");
+}, 'POST');
+
+
+$Route->add('/form/patient/{accid}/{action}', function ($accid, $action) {
+
+	$Core = new Apps\Core;
+	$Template = new Apps\Template;
+	$data = $Core->post($_POST);
+	$Db = new Apps\MysqliDb;
+	switch ($action) {
+		case 'edit':
+			$done = $Db->where("accid", $accid)->update("noh_accounts", [
+				"firstname" => $data->fn,
+				"lastname" => $data->ln,
+				"status" => $data->status,
+				"address" => $data->address,
+				"email" => $data->email,
+				"sex" => $data->sex,
+				"mobile" => $data->mobile,
+				"date_of_birth" => $data->date_of_birth	
+			]);
+			break;
+		case 'delete':
+			$del = $Db->where("accid", $accid)->delete("noh_accounts", 1);
+			break;
+	}
+	$Template->redirect("/myhq/patients");
 }, 'POST');
