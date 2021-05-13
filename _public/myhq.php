@@ -126,6 +126,10 @@ $Route->add('/myhq/{route}/page/{pid}/{shortname}', function ($route, $pid, $sho
 		$pageinfo = $Core->LoadPageInfo($shortname);
 		$Template->assign("pageinfo", $pageinfo);
 
+	} elseif ($route == "webparts") {
+
+		$pageinfo = $Core->LoadPageInfo($shortname);
+		$Template->assign("pageinfo", $pageinfo);
 	}
 
 	$Template->render("myhq.{$roots}.{$route}");

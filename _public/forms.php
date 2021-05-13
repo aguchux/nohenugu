@@ -75,6 +75,7 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 			"photo" => $photos
 		]);
 		$Template->redirect("/myhq/pages");
+	
 	} elseif ($cmd == 'edit-page') {
 
 		$Post = $Core->post($_POST);
@@ -142,16 +143,16 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		}
 
 		$Template->redirect("/myhq/edit-page/page/{$pageid}/{$shortname}");
-
 	} elseif ($cmd == 'delete-page') {
 
 		$Post = $Core->post($_POST);
 
 		$pid = $Post->pageid;
 		$Db = new Apps\MysqliDb;
-		$Db->where("pageid", $pid)->delete("noh_pages", 1);
+		$Db->where("pageid", $pid)->where("default_page",0) ->delete("noh_pages", 1);
 
 		$Template->redirect("/myhq/pages");
+
 	} elseif ($cmd == 'add-department') {
 
 		$Post = $Core->post($_POST);
@@ -182,6 +183,8 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		}
 		$Template->setError("Bed could not be added, try again", "danger", "/myhq/beds");
 		$Template->redirect("/myhq/beds");
+
+
 	} elseif ($cmd == 'add-doctor') {
 
 		$Post = $Core->post($_POST);
@@ -198,7 +201,8 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 			$Template->save();
 			$Template->redirect("/myhq/add-doctor");
 		}
-
+		
+		
 		$department = $Post->department;
 		$firstname = $Post->firstname;
 		$lastname = $Post->lastname;
@@ -210,7 +214,20 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		$status = $Post->status;
 
 		$roles = json_encode(array('user', 'doctor'));
-		$added = $Core->AddDoctor($firstname, $lastname, $email, $password, $mobile, $department, $date_of_birth_unix, $status, $roles);
+
+		$Db = new Apps\MysqliDb;
+		$added = $Db->insert("noh_accounts",[
+			"firstname"=>$firstname,
+			"lastname"=>$lastname,
+			"email"=>$email,
+			"password"=>$password,
+			"mobile"=>$mobile,
+			"department"=>$department,
+			"date_of_birth_unix"=>$date_of_birth_unix,
+			"sex"=>$sex,
+			"enabled"=>$status,
+			"roles"=>$roles
+		]);
 
 		if (isset($_FILES['picture']) && $added) {
 			$handle = new Verot\Upload\Upload($_FILES['picture']);
@@ -223,15 +240,19 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 				$handle->process($path);
 				if ($handle->processed) {
 					$photos = "{$path}{$handle->file_dst_name}";
+					$Db->where("accid",$added)->update("noh_accounts",[
+						"profile_photo"=>$photos
+					]);
 					$handle->clean();
 				} else {
 					echo 'error : ' . $handle->error;
 				}
 			}
-			$update = $Core->SetUserInfo($added, "profile_photo", $photos);
 		}
 
 		$Template->redirect("/myhq/doctors");
+
+		
 	} elseif ($cmd == 'add-patient') {
 
 		$Post = $Core->post($_POST);
@@ -250,13 +271,9 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		$added = $Core->AddPatient($firstname, $lastname, $email, $mobile, $date_of_birth_unix, $status, $roles);
 
 		$Template->redirect("/myhq/patients");
-	} elseif ($cmd == 'join') {
+
 	}
 }, 'POST');
-
-
-<<<<<<< HEAD
-=======
 
 
 $Route->add('/form/doctor/{accid}/{action}', function ($accid, $action) {
@@ -285,7 +302,6 @@ $Route->add('/form/doctor/{accid}/{action}', function ($accid, $action) {
 
 
 
->>>>>>> 141a927b507c5ef1ffe7e2b526057ec2c55d9fd5
 $Route->add('/form/department/{id}/{action}', function ($id, $action) {
 
 	$Core = new Apps\Core;
@@ -319,7 +335,7 @@ $Route->add('/form/bed/{id}/{action}', function ($id, $action) {
 			$done = $Db->where("id", $id)->update("noh_beds", [
 				"bed" => $data->bed,
 				"ward" => $data->ward,
-				"inuse" => $data->status	
+				"inuse" => $data->status
 			]);
 			break;
 		case 'delete':
@@ -346,7 +362,7 @@ $Route->add('/form/patient/{accid}/{action}', function ($accid, $action) {
 				"email" => $data->email,
 				"sex" => $data->sex,
 				"mobile" => $data->mobile,
-				"date_of_birth" => $data->date_of_birth	
+				"date_of_birth" => $data->date_of_birth
 			]);
 			break;
 		case 'delete':

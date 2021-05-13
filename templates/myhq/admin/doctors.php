@@ -63,7 +63,7 @@
                            <td><?= $doctor->email ?></td>
                            <td><?= $doctor->mobile ?></td>
                            <td>
-                              <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#EditRequest_<?= $doctor->accid; ?>" ><i class="fa fa-pencil"></i></button>
+                              <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#EditRequest_<?= $doctor->accid; ?>"><i class="fa fa-pencil"></i></button>
                               <div id="EditRequest_<?= $doctor->accid; ?>" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                                  <div class="modal-dialog modal-dialog-centered" role="dialog">
                                     <div class="modal-content">
@@ -83,49 +83,53 @@
                                                 <label>Department</label>
                                                 <select class="form-control" id="department" name="department" size="1">
                                                    <option selected class="test">Select Department</option>
-                                                   <?php while ($department = mysqli_fetch_object($departments)) : ?>
-                                                      <option class="test" value="<?= $department->id ?>"><?= $department->department ?></option>
-                                                   <?php endwhile; ?>
+                                                   <?= $Core->LoadDepartmentsToSelect($department->id) ?>
                                                 </select>
                                              </div>
 
                                              <div class="col-sm-6 form-group">
                                                 <label>First Name</label>
-                                                <input type="text" class="form-control" name="firstname" value="<?=$doctor->firstname ?>" placeholder="Enter firstname" required>
+                                                <input type="text" class="form-control" name="firstname" value="<?= $doctor->firstname ?>" placeholder="Enter firstname" required>
                                              </div>
                                              <div class="col-sm-6 form-group">
                                                 <label>Last Name(Surname)</label>
-                                                <input type="text" class="form-control" name="lastname" value="<?=$doctor->lastname ?>" placeholder="Enter Lastname" required>
+                                                <input type="text" class="form-control" name="lastname" value="<?= $doctor->lastname ?>" placeholder="Enter Lastname" required>
                                              </div>
 
                                              <div class="col-sm-12 col-md-12 alert alert-success">
                                                 <div class="row">
                                                    <div class="col-sm-6 form-group">
                                                       <label>Email</label>
-                                                      <input type="email" class="form-control" name="email" value="<?=$doctor->email ?>" placeholder="Enter Email" required>
+                                                      <input type="email" class="form-control" name="email" value="<?= $doctor->email ?>" placeholder="Enter Email" required>
+                                                   </div>
+                                                   <div class="col-sm-6 form-group">
+                                                      <label>Password</label>
+                                                      <input type="text" class="form-control" name="password" readonly="readonly" placeholder="Enter Password" value="<?= $doctor->password ?>" required>
                                                    </div>
                                                 </div>
                                              </div>
+
+
                                              <div class="col-sm-6 form-group">
                                                 <label>Mobile</label>
-                                                <input type="text" class="form-control" placeholder="Enter Mobile" name="mobile" value="<?=$doctor->mobile ?>" required>
+                                                <input type="text" class="form-control" placeholder="Enter Mobile" name="mobile" value="<?= $doctor->mobile ?>" required>
                                              </div>
                                              <div class="col-sm-6 form-group">
                                                 <label>Date of Birth</label>
-                                                <input name="date_of_birth" value="<?=$doctor->date_of_birth ?>" class="form-control" type="date" id="date_of_birth">
+                                                <input name="date_of_birth" value="<?= date("m/d/Y", $doctor->date_of_birth) ?>" class="form-control" type="date" id="date_of_birth">
                                              </div>
 
                                              <div class="col-sm-6 form-group">
                                                 <label>Sex</label><br>
                                                 <label class="radio-inline">
-                                                   <input type="radio" name="sex" value="Male" <?=$doctor->sex == "Male"? "checked='checked'":""?>>Male</label>
-                                                <label class="radio-inline"><input type="radio" name="sex" value="Female" <?=$doctor->sex == "Female"? "checked='checked'":""?>>Female</label>
+                                                   <input type="radio" name="sex" value="Male" <?= $doctor->sex == "Male" ? "checked='checked'" : "" ?>>Male</label>
+                                                <label class="radio-inline"><input type="radio" name="sex" value="Female" <?= $doctor->sex == "Female" ? "checked='checked'" : "" ?>>Female</label>
                                              </div>
 
                                              <div class="col-sm-6 form-check">
                                                 <label>Status</label><br>
-                                                <label class="radio-inline"><input type="radio" name="status" value="0" <?=$doctor->status ? "":"checked='checked'"?>>Inactive</label>
-                                                <label class="radio-inline"><input type="radio" name="status" value="1" <?=$doctor->status ? "checked='checked'":""?>>Active</label>
+                                                <label class="radio-inline"><input type="radio" name="status" value="0" <?= $doctor->enabled ? "" : "checked='checked'" ?>>Inactive</label>
+                                                <label class="radio-inline"><input type="radio" name="status" value="1" <?= $doctor->enabled ? "checked='checked'" : "" ?>>Active</label>
                                              </div>
 
                                              <div class="reset-button">

@@ -102,7 +102,7 @@
                         </div>
                     </div>
 
-                    <div class="row-flud clearfix">
+                    <div class="row clearfix">
                         <div class="col-12 col-md-12 mt-5">
                             <button type="submit" class="btn btn-primary btn-lg">Create my Page</button>
                         </div>
