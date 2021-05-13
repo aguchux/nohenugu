@@ -9,8 +9,8 @@
          </div>
          <div class="panel-body">
             <form action="/ajax/delete-page" method="post" enctype="multipart/form-data">
-            	<input type="hidden" name="pageid" value="<?= $pid ?>"
-            	<input type="hidden" name="shortname" value="<?= $shortname ?>"
+            	<input type="hidden" name="pageid" value="<?= $pid ?>" />
+            	<input type="hidden" name="shortname" value="<?= $shortname ?>" />
                 <div class="row">
                     <div class="col-md-12 form-group text-center">
                     	<p><em>Are you sure you want to delete this page?</em></p>

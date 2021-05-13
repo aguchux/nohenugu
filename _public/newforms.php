@@ -1,6 +1,7 @@
 <?php
 
 
+
 $Route->add('/ajax/{cmd}', function ($cmd) {
 
 	$Core = new Apps\Core;
@@ -28,12 +29,13 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		}
 
 		$Template->redirect("/myhq");
+
 	} elseif ($cmd == 'add-page') {
 
 		$Post = $Core->post($_POST);
 
-		$category = array();
-		if (isset($Post->category)) {
+		$category = "[]";
+		if ($Post->category) {
 			$category = $Post->category;
 		}
 
@@ -43,65 +45,66 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		$pagestyle = $Post->type;
 		$menutitle = $Post->menutitle;
 		$sort = $Post->sort;
-
+		
 		$shortname = $Core->slugify($title);
 		$photos = "";
 
-		if (isset($_FILES['newsphoto'])) {
-			$handle = new Verot\Upload\Upload($_FILES['newsphoto']);
-			$path = "{$Template->store}images/pages/{$shortname}/";
-			if ($handle->uploaded) {
-				$handle->file_new_name_body	= md5(time());
-				$handle->image_resize	= true;
-				$handle->image_x	= 120;
-				$handle->image_ratio_y	= true;
-				$handle->process($path);
-				if ($handle->processed) {
-					$photos = "{$path}{$handle->file_dst_name}";
-					$handle->clean();
-				} else {
-					echo 'error : ' . $handle->error;
-				}
-			}
-		}
+		// if (isset($_FILES['newsphoto'])) {
+		// 	$handle = new Verot\Upload($_FILES['newsphoto']);
+		// 	$path = "{$Template->store}images/pages/{$shortname}/";
+		// 	if ($handle->uploaded) {
+		// 		$handle->file_new_name_body	= md5(time());
+		// 		$handle->image_resize	= true;
+		// 		$handle->image_x	= 120;
+		// 		$handle->image_ratio_y	= true;
+		// 		$handle->process($path);
+		// 		if ($handle->processed) {
+		// 			$photos = "{$path}{$handle->file_dst_name}";
+		// 			$handle->clean();
+		// 		} else {
+		// 			echo 'error : ' . $handle->error;
+		// 		}
+		// 	}
+		// }
 
 		$Db = new Apps\MysqliDb;
-		$done = $Db->insert("noh_pages", [
-			"shortname" => $shortname,
-			"categories" => $category,
-			"parent" => $parent,
-			"pagestyle" => $pagestyle,
-			"title" => $title,
-			"menutitle" => $menutitle,
-			"sort" => $sort,
-			"photo" => $photos
+		$done = $Db->insert("noh_pages",[
+			"shortname"=>$shortname,
+			"categories"=>$category,
+			"parent"=>$parent,
+			"pagestyle"=>$pagestyle,
+			"title"=>$title,
+			"menutitle"=>$menutitle,
+			"sort"=>$sort,
+			"photo"=>$photos
 		]);
-		$Template->redirect("/myhq/pages");
+
+		$Core->debug($done);
+
+		if ($done) {
+
+		}
+
 	} elseif ($cmd == 'edit-page') {
 
 		$Post = $Core->post($_POST);
 		$pageid = $Post->pageid;
-		$PageInfo = $Core->PageInfo($pageid);
 
-		$category = array();
-		if (isset($Post->category)) {
+		$category = "[]";
+		if ($Post->category) {
 			$category = $Post->category;
 		}
-
 		$category = json_encode($category);
+
+		$shortname = $Post->shortname;
 		$parent = $Post->parent;
 		$title = $Post->title;
-		$pagestyle = $Post->type;
+		$pagestyle = $Post->pagestyle;
 		$menutitle = $Post->menutitle;
 		$sort = $Post->sort;
-
-
-		$shortname = $PageInfo->shortname;
-		$new_shortname = $Core->slugify($title);
-		if ($shortname <> $new_shortname) {
-			$shortname = $Core->slugify($title);
-		}
-		$photos = "";
+		$isnews = $Post->isnews;
+		$excerpt = $Post->excerpt;
+		$contents = $Post->contents;
 
 		if (isset($_FILES['newsphoto'])) {
 
@@ -120,38 +123,27 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 					echo 'error : ' . $handle->error;
 				}
 			}
+			$updated = $Core->UpdatePageWithPhotos($pageid, $parent, $menutitle, $title, $excerpt, $contents, $sort, $shortname, $isnews, $category, $photos);
+		} else {
+			$updated = $Core->UpdatePage($pageid, $parent, $menutitle, $title, $excerpt, $contents, $sort, $shortname, $isnews, $category);
 		}
 
-		$Db = new Apps\MysqliDb;
-		$Db->where("pageid", $pageid);
-		$done = $Db->update("noh_pages", [
-			"shortname" => $shortname,
-			"categories" => $category,
-			"parent" => $parent,
-			"pagestyle" => $pagestyle,
-			"title" => $title,
-			"menutitle" => $menutitle,
-			"sort" => $sort,
-			"photo" => $photos
-		]);
-
-		if ($PageInfo->pagestyle == "blog") {
-			$Db->where("pageid", $pageid);
-			$done = $Db->update("noh_pages", [
-				"excerpt" => $Post->excerpt,
-				"content " => $Post->content
-			]);
+		if ($updated) {
+			$Template->data['notify'] = $Core->notify("Wow lovely!", "The page has been successfully updated.");
+			$Template->save();
+			$Template->redirect("/myhq/edit-page/page/{$pageid}/{$shortname}");
+		} else {
+			$Template->data['notify'] = $Core->notify("Something Happened?", "The changes on the page could not be saved.");
+			$Template->save();
+			$Template->redirect("/myhq/add-page");
 		}
-
-		$Template->redirect("/myhq/edit-page/page/{$pageid}/{$shortname}");
-
 	} elseif ($cmd == 'delete-page') {
 
 		$Post = $Core->post($_POST);
 
 		$pid = $Post->pageid;
 		$Db = new Apps\MysqliDb;
-		$Db->where("pageid", $pid)->delete("noh_pages", 1);
+		$Db->where("pageid",$pid)->delete("noh_pages",1);
 
 		$Template->redirect("/myhq/pages");
 	} elseif ($cmd == 'add-department') {
@@ -257,23 +249,4 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 }, 'POST');
 
 
-$Route->add('/form/department/{id}/{action}', function ($id, $action) {
 
-	$Core = new Apps\Core;
-	$Template = new Apps\Template;
-	$data = $Core->post($_POST);
-	$Db = new Apps\MysqliDb;
-	switch ($action) {
-		case 'edit':
-			$done = $Db->where("id", $id)->update("noh_departments", [
-				"department" => $data->department,
-				"description" => $data->description,
-				"enabled" => $data->status
-			]);
-			break;
-		case 'delete':
-			$del = $Db->where("id", $id)->delete("noh_departments", 1);
-			break;
-	}
-	$Template->redirect("/myhq/departments");
-}, 'POST');

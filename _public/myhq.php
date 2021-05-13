@@ -108,30 +108,28 @@ $Route->add('/myhq/{route}/page/{pid}/{shortname}', function ($route, $pid, $sho
 
 	$roots = $Template->storage('root');
 
-	
-	//Show Notifications//
-	if ($Template->data['notify']) {
-		$Toast = $Core->Toast($Template->data['notify']);
-		if ($Toast->id) {
-			$Template->toast("{$Toast->title}", "{$Toast->notice}");
-		}
-	}
-	//Show Notifications//
-
 	if ($route == "edit-page") {
+		
 
 		$parents = $Core->LoadParentMenus();
 		$pageinfo = $Core->LoadPageInfo($shortname);
 		$Template->assign("pageinfo", $pageinfo);
 		$Template->assign("parents", $parents);
+		
 		$cat = json_decode($pageinfo->categories);
+
 		$Template->assign("cat", $cat);
+		
+
 	} elseif ($route == "delete-page") {
 
 		$pageinfo = $Core->LoadPageInfo($shortname);
 		$Template->assign("pageinfo", $pageinfo);
+
 	}
-	$Template->render("dashboard.{$route}");
+
+	$Template->render("myhq.{$roots}.{$route}");
+
 }, 'GET');
 
 

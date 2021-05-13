@@ -13,10 +13,8 @@ $Route->add('/', function () {
 }, 'GET');
 
 
-
 require_once DOT . "/_public/myhq.php" ;
 require_once DOT . "/_public/forms.php" ;
-
 
 
 $Route->add('/logout', function () {

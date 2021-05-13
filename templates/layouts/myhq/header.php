@@ -159,8 +159,7 @@
                             <ul class="treeview-menu">
                                 <li><a href="/myhq/add-page">Add Page</a></li>
                                 <li><a href="/myhq/pages">Manage Pages</a></li>
-                                <li><a href="/myhq/add-layout">New Layout</a></li>
-                                <li><a href="/myhq/layouts">Manage Layouts</a></li>
+                                <li><a href="/myhq/webparts">Manage Webparts</a></li>
                             </ul>
                         </li>
 
