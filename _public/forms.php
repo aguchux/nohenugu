@@ -75,7 +75,6 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 			"photo" => $photos
 		]);
 		$Template->redirect("/myhq/pages");
-	
 	} elseif ($cmd == 'edit-page') {
 
 		$Post = $Core->post($_POST);
@@ -102,22 +101,17 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		}
 		$photos = "";
 
-		if (isset($_FILES['newsphoto'])) {
-
-			$handle = new Verot\Upload\Upload($_FILES['newsphoto']);
-			$path = "{$Template->store}images/pages/{$shortname}/";
-			if ($handle->uploaded) {
-				$handle->file_new_name_body	= md5(time());
-				$handle->image_resize	= true;
-				$handle->image_x	= 120;
-				$handle->image_ratio_y	= true;
-				$handle->process($path);
-				if ($handle->processed) {
-					$photos = "{$path}{$handle->file_dst_name}";
-					$handle->clean();
-				} else {
-					echo 'error : ' . $handle->error;
-				}
+		if ($_FILES["newsphoto"]['size'] > 0) {
+			$handle = new \Verot\Upload\Upload($_FILES["photo"]);
+			$handle->image_resize    = true;
+			$handle->image_y    = 500;
+			$handle->image_x    = 500;
+			$FileDir = "{$Template->store}images/pages/{$shortname}/";
+			$handle->process($FileDir);
+			if ($handle->processed) {
+				$photos = $handle->file_dst_pathname;
+				$Template->redirect("/admin/gallery/");
+				$handle->clean();
 			}
 		}
 
@@ -149,10 +143,13 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 
 		$pid = $Post->pageid;
 		$Db = new Apps\MysqliDb;
-		$Db->where("pageid", $pid)->where("default_page",0) ->delete("noh_pages", 1);
+
+		$defaultlandingpage = $Db->where("name", "defaultlandingpage")->getOne("noh_settings");
+		$defaultlandingpage = $defaultlandingpage['value'];
+
+		$Db->where("pageid", $pid)->where("pageid", $defaultlandingpage, "!=")->delete("noh_pages", 1);
 
 		$Template->redirect("/myhq/pages");
-
 	} elseif ($cmd == 'add-department') {
 
 		$Post = $Core->post($_POST);
@@ -163,6 +160,8 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 
 		$added = $Core->AddDepartment($department, $description, $status);
 		$Template->redirect("/myhq/departments");
+	
+	
 	} elseif ($cmd == 'add-bed') {
 
 		$Post = $Core->post($_POST);
@@ -183,6 +182,32 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		}
 		$Template->setError("Bed could not be added, try again", "danger", "/myhq/beds");
 		$Template->redirect("/myhq/beds");
+	
+	} elseif ($cmd == 'add-notice') {
+	
+		$Post = $Core->post($_POST);
+		$accid = $Template->storage("accid");
+
+		$title = $Post->title;
+		$notice = $Post->notice;
+		$startdate = $Post->startdate;
+		$enddate = $Post->enddate;
+		$status = $Post->status;
+		$receipients = json_encode($Post->receipients);
+
+
+		$Core->Debug($Post);
+		
+		$Db = new Apps\MysqliDb;
+		$notice = $Db->insert("noh_notifications", [
+			"title" => $title,
+			"notice" => $notice,
+			"startdate" => $startdate,
+			"enddate" => $enddate,
+			"enabled" => $status,
+			"receipients" => $receipients,
+			"sentby" => $accid
+		]);
 
 
 	} elseif ($cmd == 'add-doctor') {
@@ -192,57 +217,36 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		$email = $Post->email;
 		$mobile = $Post->mobile;
 
-		$echeck = $Core->UserInfo($email);
-		$mcheck = $Core->UserInfo($mobile);
+		$echeck = $Core->UserExists($email);
 
-
-		if (($echeck->accid) || ($mcheck->accid)) {
-			$Template->data['notify'] = $Core->notify("Email in use", "The email you entered has alread been registered to another doctor");
-			$Template->save();
+		if ($echeck) {
 			$Template->redirect("/myhq/add-doctor");
 		}
-		
-		
+
 		$department = $Post->department;
 		$firstname = $Post->firstname;
 		$lastname = $Post->lastname;
 		$password = $Post->password;
-		$date_of_birth = $Post->date_of_birth;
-		$date_of_birth_unix = strtotime($date_of_birth);
+		$dob = $Post->date_of_birth;
 		$sex = $Post->sex;
 		$department = $Post->department;
 		$status = $Post->status;
 
 		$roles = json_encode(array('user', 'doctor'));
+		$accid = $Core->AddDoctor($firstname, $lastname, $email, $password, $mobile, $department, $dob, $sex, $status, $roles);
 
-		$Db = new Apps\MysqliDb;
-		$added = $Db->insert("noh_accounts",[
-			"firstname"=>$firstname,
-			"lastname"=>$lastname,
-			"email"=>$email,
-			"password"=>$password,
-			"mobile"=>$mobile,
-			"department"=>$department,
-			"date_of_birth_unix"=>$date_of_birth_unix,
-			"sex"=>$sex,
-			"enabled"=>$status,
-			"roles"=>$roles
-		]);
-
-		if (isset($_FILES['picture']) && $added) {
+		if (isset($_FILES['picture']) && $accid) {
 			$handle = new Verot\Upload\Upload($_FILES['picture']);
-			$path = "{$Template->store}images/accounts/{$added}/";
+			$path = "{$Template->store}images/accounts/{$accid}/";
 			if ($handle->uploaded) {
 				$handle->file_new_name_body	= md5(time());
 				$handle->image_resize	= true;
-				$handle->image_x	= 120;
+				$handle->image_x	= 200;
 				$handle->image_ratio_y	= true;
 				$handle->process($path);
 				if ($handle->processed) {
 					$photos = "{$path}{$handle->file_dst_name}";
-					$Db->where("accid",$added)->update("noh_accounts",[
-						"profile_photo"=>$photos
-					]);
+					$Core->SetUserInfo($accid, "profile_photo", $photos);
 					$handle->clean();
 				} else {
 					echo 'error : ' . $handle->error;
@@ -252,26 +256,26 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 
 		$Template->redirect("/myhq/doctors");
 
-		
 	} elseif ($cmd == 'add-patient') {
 
 		$Post = $Core->post($_POST);
-
 		$mobile = $Post->mobile;
-		$email = $Post->email;
-		$firstname = $Post->fn;
-		$lastname = $Post->ln;
-		$date_of_birth = $Post->date_of_birth;
-		$date_of_birth_unix = strtotime($date_of_birth);
-		$sex = $Post->sex;
-		$status = $Post->status;
 
 		$roles = json_encode(array('user', 'patient'));
 
-		$added = $Core->AddPatient($firstname, $lastname, $email, $mobile, $date_of_birth_unix, $status, $roles);
+		$accid = $Core->AddPatient($Post->hid, $Post->accesscode, $Post->fn, $Post->ln, $Post->email, $Post->mobile, $Post->date_of_birth, $Post->status, $Post->sex, $roles, $Post->address);
 
 		$Template->redirect("/myhq/patients");
 
+	} elseif ($cmd == 'settings') {
+
+		$Post = $Core->post($_POST);
+		$SiteInfos = $Core->SiteInfos();
+		while ($site = mysqli_fetch_object($SiteInfos)) {
+			$_name = $site->name;
+			$Core->setSiteInfo("{$site->name}", $Post->$_name);
+		}
+		$Template->redirect("/myhq/settings");
 	}
 }, 'POST');
 
@@ -281,20 +285,42 @@ $Route->add('/form/doctor/{accid}/{action}', function ($accid, $action) {
 	$Template = new Apps\Template;
 	$data = $Core->post($_POST);
 	$Db = new Apps\MysqliDb;
+
 	switch ($action) {
 		case 'edit':
-			$done = $Db->where("accid", $accid)->update("noh_doctors", [
+
+			$done = (int)$Db->where("accid", $accid)->update("noh_accounts", [
 				"firstname" => $data->firstname,
 				"lastname" => $data->lastname,
 				"department" => $data->department,
-				"sex" => $data->department,
+				"sex" => $data->sex,
 				"enabled" => $data->status,
 				"email" => $data->email,
-				"date_of_birth" => $data->date_of_birth
+				"dob" => $data->date_of_birth
 			]);
+
+			if (isset($_FILES['picture']) && $accid) {
+				$handle = new Verot\Upload\Upload($_FILES['picture']);
+				$path = "{$Template->store}images/accounts/{$accid}/";
+				if ($handle->uploaded) {
+					$handle->file_new_name_body	= md5(time());
+					$handle->image_resize	= true;
+					$handle->image_x = 200;
+					$handle->image_ratio_y	= true;
+					$handle->process($path);
+					if ($handle->processed) {
+						$photos = "{$path}{$handle->file_dst_name}";
+						$Core->SetUserInfo($accid, "profile_photo", $photos);
+						$handle->clean();
+					} else {
+						echo 'error : ' . $handle->error;
+					}
+				}
+			}
+
 			break;
 		case 'delete':
-			$del = $Db->where("accid", $accid)->delete("noh_doctors", 1);
+			$del = $Db->where("accid", $accid)->delete("noh_accounts", 1);
 			break;
 	}
 	$Template->redirect("/myhq/doctors");
@@ -351,22 +377,22 @@ $Route->add('/form/patient/{accid}/{action}', function ($accid, $action) {
 	$Core = new Apps\Core;
 	$Template = new Apps\Template;
 	$data = $Core->post($_POST);
-	$Db = new Apps\MysqliDb;
+	$DBase = new Apps\MysqliDb;
 	switch ($action) {
 		case 'edit':
-			$done = $Db->where("accid", $accid)->update("noh_accounts", [
+			$done = (int)$DBase->where("accid", $accid)->update("noh_accounts", [
 				"firstname" => $data->fn,
 				"lastname" => $data->ln,
-				"status" => $data->status,
+				"enabled" => $data->status,
 				"address" => $data->address,
 				"email" => $data->email,
 				"sex" => $data->sex,
 				"mobile" => $data->mobile,
-				"date_of_birth" => $data->date_of_birth
+				"dob" => $data->date_of_birth
 			]);
 			break;
 		case 'delete':
-			$del = $Db->where("accid", $accid)->delete("noh_accounts", 1);
+			$del = $DBase->where("accid", $accid)->delete("noh_accounts", 1);
 			break;
 	}
 	$Template->redirect("/myhq/patients");

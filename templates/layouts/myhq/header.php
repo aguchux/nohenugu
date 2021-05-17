@@ -40,7 +40,7 @@
     <!-- Start Theme Layout Style
         =====================================================================-->
     <link rel="stylesheet" href="//cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
-        
+
     <!-- Theme style -->
     <link rel="stylesheet" type="text/css" href="<?= $assets ?>myhq/editors/tinymce/tinymce.min.css">
     <link href="<?= $assets ?>myhq/dist/css/stylehealth.min.css" rel="stylesheet" type="text/css">
@@ -225,6 +225,12 @@
                                 <li><a href="/myhq/add-notice">Add Notice</a></li>
                                 <li><a href="/myhq/notices">Manage Notice</a></li>
                             </ul>
+                        </li>
+
+                        <li>
+                            <a href="/myhq/settings">
+                                <i class="fa fa-cog"></i><span> Site Settings</span>
+                            </a>
                         </li>
 
                     <?php elseif (in_array("doctor", $Template->data['roles'])) : ?>

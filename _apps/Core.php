@@ -76,7 +76,6 @@ class Core extends Model
 
 	public function Login($username, $password)
 	{
-		$password = $this->Passwordify($password);
 		$Login = mysqli_query($this->dbCon, "select * from noh_accounts where username='$username' AND password='$password'");
 		$Login = mysqli_fetch_object($Login);
 		return $Login;
@@ -103,7 +102,7 @@ class Core extends Model
 		return $result;
 	}
 
-	
+
 	public static function slugify($string)
 	{
 		$table = array(
@@ -121,6 +120,16 @@ class Core extends Model
 		// -- Returns the slug
 		return strtolower(strtr($string, $table));
 	}
+
+
+
+	public function UserExists($username)
+	{
+		$UserExists = mysqli_query($this->dbCon, "SELECT count(accid) AS cnt FROM noh_accounts WHERE (username='$username' OR email='$username')");
+		$UserExists = mysqli_fetch_object($UserExists);
+		return (int)$UserExists->cnt;
+	}
+
 
 
 	public function UserInfo($accid)
@@ -143,7 +152,7 @@ class Core extends Model
 
 	public function SetUserInfo($accid, $key, $val)
 	{
-		$SetUserInfo = mysqli_query($this->dbCon, "UPDATE noh_accounts SET $key='$val' where accid='$accid' OR email='$accid' OR mobile='$accid'");
+		$SetUserInfo = mysqli_query($this->dbCon, "UPDATE noh_accounts SET $key='$val' where accid='$accid' OR email='$accid'");
 		return mysqli_affected_rows($this->dbCon);
 	}
 
@@ -329,9 +338,9 @@ class Core extends Model
 		return $result;
 	}
 
-	public function AddDoctor($fn, $ln, $email, $password, $mobile, $department, $dob, $status = 0, $roles = "['user','doctor']")
+	public function AddDoctor($fn, $ln, $email, $password, $mobile, $department, $dob, $sex, $status = 0, $roles = "['user','doctor']")
 	{
-		$this->query("insert into noh_accounts(firstname,lastname,username,email,password,mobile,department,dob,enabled,roles) value('$fn','$ln','$email','$email','$password','$mobile','$department','$dob','$status','$roles')");
+		$this->query("insert into noh_accounts(firstname,lastname,username,email,password,mobile,department,dob,sex,enabled,roles,roots) value('$fn','$ln','$email','$email','$password','$mobile','$department','$dob','$sex','$status','$roles','doctors')");
 		return $this->getLastId();
 	}
 
@@ -349,7 +358,7 @@ class Core extends Model
 	public function SetupHID($hid, $accid, $lastseen)
 	{
 		$lastseen = time();
-		$this->query("insert into noh_hids(hid,accid,last_seen) values('$hid','$accid','$lastseen') ");
+		$this->query("INSERT INTO noh_hids(hid,accid,last_seen) VALUES('$hid','$accid','$lastseen') ");
 		return md5($this->getLastId() . $hid . $accid);
 	}
 
@@ -359,16 +368,10 @@ class Core extends Model
 		return $result;
 	}
 
-	public function AddPatient($fn, $ln, $email, $mobile, $dob, $status = 0, $roles = "['user','patient']")
+	public function AddPatient($username, $password, $fn, $ln, $email, $mobile, $dob, $status = 0, $sex, $roles = "['user','patient']",$address)
 	{
-		$GenHID = $this->GenHID();
-		$username = $GenHID;
-		$password = $this->Passwordify($GenHID);
-		$this->query("insert into noh_accounts(firstname,lastname,email,username,password,mobile,dob,enabled,roles) value('$fn','$ln','$email','$username','$password','$mobile','$dob','$status','$roles')");
+		$this->query("INSERT INTO noh_accounts(username,password,firstname,lastname,email,mobile,dob,enabled,sex,roles,address) VALUES('$username','$password','$fn','$ln','$email','$mobile','$dob','$status','$sex','$roles','$address')");
 		$accid =  $this->getLastId();
-		if ($accid) {
-			$this->SetupHID($GenHID, $accid, time());
-		}
 		return $accid;
 	}
 
@@ -546,6 +549,30 @@ class Core extends Model
 		$result = mysqli_query($this->dbCon, "delete videos.* from videos where vid='$vid'");
 		return $result;
 	}
+
+
+
+
+	public  function SiteInfos()
+	{
+		$SiteInfos = mysqli_query($this->dbCon, "SELECT * FROM noh_settings");
+		return $SiteInfos;
+	}
+
+	public  function getSiteInfo($name)
+	{
+		$getSiteInfo = mysqli_query($this->dbCon, "SELECT `value` FROM noh_settings WHERE name='$name'");
+		$getSiteInfo = mysqli_fetch_object($getSiteInfo);
+		return $getSiteInfo->value;
+	}
+
+	public  function setSiteInfo($name, $value)
+	{
+		mysqli_query($this->dbCon, "UPDATE noh_settings SET value='$value' WHERE name='$name'");
+		return $this->countAffected();
+	}
+
+
 	function LoadSiteInfo($appid)
 	{
 		$results = mysqli_query($this->dbCon, "select * from siteinfo where appid='$appid' LIMIT 0,1");
@@ -1018,7 +1045,7 @@ class Core extends Model
 	{
 		$GetNextSort = mysqli_query($this->dbCon, "SELECT count(pageid) AS cnt FROM noh_pages");
 		$GetNextSort = mysqli_fetch_object($GetNextSort);
-		if(isset($GetNextSort->cnt)){
+		if (isset($GetNextSort->cnt)) {
 			return (int) $GetNextSort->cnt + 1;
 		}
 		return 1;
@@ -1059,7 +1086,7 @@ class Core extends Model
 		return $GalleryInfo;
 	}
 
-	
+
 	public function Upload($FileDir, $fileObj, $height = 1000, $width = 1000)
 	{
 		$handle = new  Upload($fileObj);

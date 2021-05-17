@@ -69,9 +69,9 @@
                         <div class="col-12 col-md-3 form-group">
                             <label class="col-12 col-md-12" for="parent">Parent Page</label>
                             <select name="parent" id="parent" class="form-control form-control-lg">
-                                <option value="home" selected="selected">Top Memu (Home)</option>
+                                <option value="0" selected="selected">Top Memu (Home)</option>
                                 <?php while ($pr = mysqli_fetch_array($parents)) : ?>
-                                    <option value="<?= $pr['shortname'] ?>" <?= $pageinfo->shortname == $pr['shortname'] ? "selected='selected'" : "" ?>><?= $pr['menutitle'] ?></option>
+                                    <option value="<?= $pr['id'] ?>" <?= $pageinfo->shortname == $pr['shortname'] ? "selected='selected'" : "" ?>><?= $pr['menutitle'] ?></option>
                                 <?php endwhile; ?>
                             </select>
                         </div>

@@ -64,8 +64,8 @@
 
                     <div class="col-sm-6 form-check">
                         <label>Status</label><br>
-                        <label class="radio-inline"><input type="radio" name="status" value="0" checked="checked">Inactive</label>
-                        <label class="radio-inline"><input type="radio" name="status" value="1">Active</label>
+                        <label class="radio-inline"><input type="radio" name="status" value="0">Inactive</label>
+                        <label class="radio-inline"><input type="radio" name="status" value="1" checked="checked">Active</label>
                     </div>
 
                     <div class="col-sm-12 reset-button">

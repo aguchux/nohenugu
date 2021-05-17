@@ -57,7 +57,7 @@
                      <? while ($doctor = mysqli_fetch_object($doctors)) : ?>
                         <tr>
                            <td><label><?= $doctor->accid ?></label></td>
-                           <td><img src="<?= $assets ?>dist/img/d3.png" class="img-circle" height="30" width="30"></td>
+                           <td><img src="<?= $doctor->profile_photo ?>" class="img-circle" height="30" width="30"></td>
                            <td><?= "DR. <strong>{$doctor->lastname}</strong>, {$doctor->firstname}" ?></td>
                            <td><?= @$Me->Core->GetDepartment($doctor->department)->department ?></td>
                            <td><?= $doctor->email ?></td>
@@ -68,11 +68,12 @@
                                  <div class="modal-dialog modal-dialog-centered" role="dialog">
                                     <div class="modal-content">
                                        <div class="modal-header text-center">
-                                          <h3>Edit Doctor <br /><strong class="text-info"><?= "DR. <strong>{$doctor->lastname}</strong>, {$doctor->firstname}" ?></br></h3>
+                                          <img class="my-2" style="width: 100px;" src="<?= $doctor->profile_photo; ?>" />
+                                          <h3>Edit Doctor <br /><strong class="text-info"><?= "DR. <strong>{$doctor->lastname}</strong>, {$doctor->firstname}" ?></strong></br></h3>
                                        </div>
 
                                        <div class="modal-body">
-                                          <form action="/form/doctor/<?= $doctor->accid; ?>/edit" method="POST">
+                                          <form action="/form/doctor/<?= $doctor->accid; ?>/edit" method="POST" enctype="multipart/form-data">
 
                                              <div class="col-sm-6 form-group">
                                                 <label>Picture upload</label>
@@ -83,7 +84,7 @@
                                                 <label>Department</label>
                                                 <select class="form-control" id="department" name="department" size="1">
                                                    <option selected class="test">Select Department</option>
-                                                   <?= $Core->LoadDepartmentsToSelect($department->id) ?>
+                                                   <?= $Core->LoadDepartmentsToSelect($doctor->department) ?>
                                                 </select>
                                              </div>
 
@@ -116,7 +117,7 @@
                                              </div>
                                              <div class="col-sm-6 form-group">
                                                 <label>Date of Birth</label>
-                                                <input name="date_of_birth" value="<?= date("m/d/Y", $doctor->date_of_birth) ?>" class="form-control" type="date" id="date_of_birth">
+                                                <input name="date_of_birth" value="<?= $doctor->dob ?>" class="form-control" type="date" id="date_of_birth">
                                              </div>
 
                                              <div class="col-sm-6 form-group">
@@ -135,6 +136,7 @@
                                              <div class="reset-button">
                                                 <button type="submit" class="btn btn-success">Save Doctor</button>
                                              </div>
+
                                           </form>
                                        </div>
 
