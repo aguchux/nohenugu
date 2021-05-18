@@ -1,6 +1,6 @@
 
 <!-- 
-    Name: Row with image, title and content
+    Name: Row with image on the right, title and content
 -->
 
 
