@@ -19,7 +19,7 @@ $SiteInfos = $Core->SiteInfos();
 
                         <?php while ($site = mysqli_fetch_object($SiteInfos)) : ?>
                             <div class="col-12 col-md-12 form-group my-0">
-                                <label><?= strtoupper($site->name) ?></label>
+                                <label><?= strtoupper($site->caption) ?></label>
                                 <?php if ($site->type == "input") : ?>
                                     <input required name="<?= $site->name ?>" class="form-control form-control-lg" type="text" value="<?= $site->value ?>" placeholder="<?= strtoupper($site->name) ?>" />
                                 <?php elseif ($site->type == "checkbox ") : ?>
@@ -48,3 +48,6 @@ $SiteInfos = $Core->SiteInfos();
         </div>
     </div>
 </div>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>

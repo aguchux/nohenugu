@@ -11,37 +11,27 @@
 
                 <form action="/ajax/edit-page" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="pageid" value="<?= $pageinfo->pageid ?>" />
-                    
-                    
+
+
                     <div class="row">
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-3 form-group">
                             <label class="checkbox-inline">
-                                <input type="checkbox" id="category1" value="cat1" name="category[]" <?= in_array('cat1', $cat) ? 'checked="checked"' : ''; ?>> 1ST Menu
+                                <input type="checkbox" id="category1" value="cat1" name="category[]" <?= in_array('cat1', $cat) ? 'checked="checked"' : ''; ?> /> Top Link Menu
                             </label>
                         </div>
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-3 form-group">
                             <label class="checkbox-inline">
-                                <input type="checkbox" id="category2" value="cat2" name="category[]" <?= in_array('cat2', $cat) ? 'checked="checked"' : ''; ?>> 2ND Menu
+                                <input type="checkbox" id="category2" value="cat2" name="category[]" <?= in_array('cat2', $cat) ? 'checked="checked"' : ''; ?>/> Main Site Menu
                             </label>
                         </div>
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-3 form-group">
                             <label class="checkbox-inline">
-                                <input type="checkbox" id="category3" value="cat3" name="category[]" <?= in_array('cat3', $cat) ? 'checked="checked"' : ''; ?>> Sider Menu
+                                <input type="checkbox" id="category3" value="cat3" name="category[]" <?= in_array('cat3', $cat) ? 'checked="checked"' : ''; ?>/> 1ST Footer Menu
                             </label>
                         </div>
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-3 form-group">
                             <label class="checkbox-inline">
-                                <input type="checkbox" id="category4" value="cat4" name="category[]" <?= in_array('cat4', $cat) ? 'checked="checked"' : ''; ?>> Popular Menu
-                            </label>
-                        </div>
-                        <div class="col-md-2 form-group">
-                            <label class="checkbox-inline">
-                                <input type="checkbox" id="category5" value="cat5" name="category[]" <?= in_array('cat5', $cat) ? 'checked="checked"' : ''; ?>> Top Menu
-                            </label>
-                        </div>
-                        <div class="col-md-2 form-group">
-                            <label class="checkbox-inline">
-                                <input type="checkbox" id="category6" value="cat6" name="category[]" <?= in_array('cat6', $cat) ? 'checked="checked"' : ''; ?>> Footer Menu
+                                <input type="checkbox" id="category4" value="cat4" name="category[]" <?= in_array('cat4', $cat) ? 'checked="checked"' : ''; ?>/> 2ND Footer Menu
                             </label>
                         </div>
 
@@ -56,22 +46,36 @@
 
                     <div class="row">
 
-                        <div class="col-12 col-md-6 form-group">
+                        <div class="col-12 col-md-4 form-group">
                             <label for="title">Page Title</label>
                             <input required name="title" id="title" class="form-control form-control-lg" type="text" placeholder="Page Title" value="<?= $pageinfo->title; ?>">
                         </div>
 
-                        <div class="col-12 col-md-6 form-group">
+                        <div class="col-12 col-md-4 form-group">
                             <label for="menutitle">Menu Title</label>
                             <input required class="form-control form-control-lg" name="menutitle" id="menutitle" type="text" placeholder="menutitle" value="<?= $pageinfo->menutitle; ?>">
                         </div>
 
+                        <div class="col-md-2 form-group">
+                            <label for="showheader">Show Top Menu</label><br/>
+                            <label class="checkbox-inline mt-2">
+                                <input type="checkbox" id="showheader" value="1" name="showheader" <?= $pageinfo->showheader ? 'checked="checked"' : ''; ?> /> Show Header
+                            </label>
+                        </div>
+                        <div class="col-md-2 form-group">
+                            <label for="showfooter">Show Bottom Footer</label><br/>
+                            <label class="checkbox-inline mt-2">
+                                <input type="checkbox" id="showfooter" value="1" name="showfooter" <?= $pageinfo->showfooter ? 'checked="checked"' : ''; ?> /> Show Footer
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-12 col-md-3 form-group">
                             <label class="col-12 col-md-12" for="parent">Parent Page</label>
                             <select name="parent" id="parent" class="form-control form-control-lg">
-                                <option value="0" selected="selected">Top Memu (Home)</option>
                                 <?php while ($pr = mysqli_fetch_array($parents)) : ?>
-                                    <option value="<?= $pr['id'] ?>" <?= $pageinfo->shortname == $pr['shortname'] ? "selected='selected'" : "" ?>><?= $pr['menutitle'] ?></option>
+                                    <option value="<?= $pr['pageid'] ?>" <?= $pageinfo->pageid == $pr['pageid'] ? "selected='selected'" : "" ?>><?= $pr['menutitle'] ?></option>
                                 <?php endwhile; ?>
                             </select>
                         </div>
@@ -98,15 +102,15 @@
                     </div>
 
 
-                    <?php if($pageinfo->pagestyle=="blog"): ?>
-                    <div class="row clearfix">
-                        <div class="col-md-12 form-group">
-                            <textarea class="form-control tinymce-classic" name="contents" id="contents" style="width:100%;"><?= $pageinfo->content; ?></textarea>
+                    <?php if ($pageinfo->pagestyle == "blog") : ?>
+                        <div class="row clearfix">
+                            <div class="col-md-12 form-group">
+                                <textarea class="form-control tinymce-classic" name="contents" id="contents" style="width:100%;"><?= $pageinfo->content; ?></textarea>
+                            </div>
                         </div>
-                    </div>
                     <?php endif; ?>
 
-                
+
 
                     <div class="row clearfix">
                         <div class="col-12 col-md-12 mt-5">

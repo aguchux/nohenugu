@@ -113,11 +113,12 @@ class Core extends Model
 			'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e',
 			'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o',
 			'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b',
-			'ÿ' => 'y', 'Ŕ' => 'R', 'ŕ' => 'r', '/' => '-', ' ' => '-', '&' => 'and'
+			'ÿ' => 'y', 'Ŕ' => 'R', 'ŕ' => 'r', '/' => '-', ' ' => '-',','=>'', '&' => 'and'
 		);
 		// -- Remove duplicated spaces
 		$stripped = preg_replace(array('/\s{2,}/', '/[\t\n]/', '/[^a-z0-9]/i'), ' ', $string);
 		// -- Returns the slug
+		
 		return strtolower(strtr($string, $table));
 	}
 
@@ -250,7 +251,8 @@ class Core extends Model
 
 	public function CountMenuPages()
 	{
-		$this->query("select pageid from noh_pages where parent='home'");
+		$rootpage = $this->getSiteInfo('defaultlandingpage');
+		$this->query("select pageid from noh_pages where parent='{$rootpage}'");
 		return $this->countAffected();
 	}
 	public function LoadSubMenus($shn)
@@ -266,7 +268,8 @@ class Core extends Model
 
 	public function LoadParentMenus()
 	{
-		$result = mysqli_query($this->dbCon, "select pageid,menutitle,parent,shortname,isnews from noh_pages where parent='home' AND isnews='NO' ORDER BY sort ASC");
+		$rootpage = $this->getSiteInfo('defaultlandingpage');
+		$result = mysqli_query($this->dbCon, "SELECT * FROM  noh_pages WHERE parent='{$rootpage}' AND isnews='NO' ORDER BY sort ASC");
 		return $result;
 	}
 
@@ -1053,7 +1056,7 @@ class Core extends Model
 
 	public  function HasPages($page)
 	{
-		$HasPages = mysqli_query($this->dbCon, "SELECT count(id) AS cnt FROM noh_pages WHERE parent='$page'");
+		$HasPages = mysqli_query($this->dbCon, "SELECT count(pageid) AS cnt FROM noh_pages WHERE parent='$page'");
 		$HasPages = mysqli_fetch_object($HasPages);
 		return $HasPages->cnt;
 	}
@@ -1147,4 +1150,26 @@ class Core extends Model
 		mysqli_query($this->dbCon, "UPDATE noh_slides SET `$name`='$value' WHERE id='$slide'");
 		return $this->countAffected();
 	}
+
+
+
+
+
+	
+	public function Pages()
+	{
+		$rootpage = $this->getSiteInfo('defaultlandingpage');
+		$Pages = mysqli_query($this->dbCon, "SELECT * FROM noh_pages WHERE pagestyle='page' OR type='store' OR pagestyle='newspage' AND parent='{$rootpage}' ORDER BY sort ASC");
+		return $Pages;
+	}
+
+	public function CatPages($cat)
+	{
+		$rootpage = $this->getSiteInfo('defaultlandingpage');
+		$CatPages = mysqli_query($this->dbCon, "SELECT * FROM noh_pages WHERE categories  LIKE '%$cat%' AND  parent='{$rootpage}' ORDER BY sort ASC");
+		return $CatPages;
+	}
+
+
+
 }

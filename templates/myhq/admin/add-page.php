@@ -13,34 +13,25 @@
                     <?= $Me->tokenize() ?>
 
                     <div class="row mx-auto">
-                        <div class="col-md-2 form-group">
+
+                        <div class="col-md-3 form-group">
                             <label class="checkbox-inline">
-                                <input type="checkbox" id="category1" value="cat1" name="category[]"> 1ST Menu
+                                <input type="checkbox" id="category1" value="cat1" name="category[]"> Top Link Menu
                             </label>
                         </div>
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-3 form-group">
                             <label class="checkbox-inline">
-                                <input type="checkbox" id="category2" value="cat2" name="category[]"> 2ND Menu
+                                <input type="checkbox" id="category2" value="cat2" checked aria-checked="true" name="category[]"> Main Site Menu
                             </label>
                         </div>
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-3 form-group">
                             <label class="checkbox-inline">
-                                <input type="checkbox" id="category3" value="cat3" name="category[]"> Sider Menu
+                                <input type="checkbox" id="category3" value="cat3" name="category[]"> 1ST Footer Menu
                             </label>
                         </div>
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-3 form-group">
                             <label class="checkbox-inline">
-                                <input type="checkbox" id="category4" value="cat4" name="category[]"> Popular Menu
-                            </label>
-                        </div>
-                        <div class="col-md-2 form-group">
-                            <label class="checkbox-inline">
-                                <input type="checkbox" id="category5" value="cat5" name="category[]"> Top Menu
-                            </label>
-                        </div>
-                        <div class="col-md-2 form-group">
-                            <label class="checkbox-inline">
-                                <input type="checkbox" id="category6" value="cat6" name="category[]"> Footer Menu
+                                <input type="checkbox" id="category4" value="cat4" name="category[]"> 2ND Footer Menu
                             </label>
                         </div>
                         <div class="col-md-12 form-group">
@@ -51,24 +42,41 @@
 
                     <div class="row">
 
-                        <div class="col-12 col-md-6 form-group">
+                        <div class="col-12 col-md-4 form-group">
                             <label for="title">Page Title</label>
                             <input required name="title" id="title" class="form-control form-control-lg" type="text" placeholder="Page Title">
                         </div>
 
-                        <div class="col-12 col-md-6 form-group">
+                        <div class="col-12 col-md-4 form-group">
                             <label for="menutitle">Menu Title</label>
                             <input required class="form-control form-control-lg" name="menutitle" id="menutitle" type="text" placeholder="menutitle">
                         </div>
 
+
+                        <div class="col-12 col-md-2 form-group">
+                            <label for="showheader">Show Top Menu</label><br />
+                            <label class="checkbox-inline mt-2">
+                                <input type="checkbox" id="showheader" value="1" name="showheader" checked="checked" /> Show Header
+                            </label>
+                        </div>
+                        <div class="col-12 col-md-2 form-group">
+                            <label for="showfooter">Show Bottom Footer</label><br />
+                            <label class="checkbox-inline mt-2">
+                                <input type="checkbox" id="showfooter" value="1" name="showfooter" checked="checked" /> Show Footer
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
                         <div class="col-12 col-md-3 form-group">
                             <label class="col-12 col-md-12" for="parent">Parent Page</label>
                             <select name="parent" id="parent" class="form-control form-control-lg">
-                                <option value="0" selected="selected">Top Memu (Home)</option>
                                 <?php
                                 $parents = $Core->LoadParentMenus();
                                 while ($pr = mysqli_fetch_array($parents)) {
-                                    echo '<option value="' . $pr['id'] . '">' . $pr['menutitle'] . '</option>';
+                                    echo '<option value="' . $pr['pageid'] . '">' . $pr['menutitle'] . '</option>';
                                 }
                                 ?>
                             </select>

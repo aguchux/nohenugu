@@ -42,6 +42,15 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		$menutitle = $Post->menutitle;
 		$sort = $Post->sort;
 
+		$showheader = 0;
+		if(isset($Post->showheader)){
+			$showheader = 1;
+		}
+		$showfooter = 0;
+		if(isset($Post->showfooter)){
+			$showfooter = 1;
+		}
+
 		$shortname = $Core->slugify($title);
 		$photos = "";
 
@@ -72,6 +81,8 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 			"title" => $title,
 			"menutitle" => $menutitle,
 			"sort" => $sort,
+			"showheader" => $showheader,
+			"showfooter" => $showfooter,
 			"photo" => $photos
 		]);
 		$Template->redirect("/myhq/pages");
@@ -93,6 +104,14 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 		$menutitle = $Post->menutitle;
 		$sort = $Post->sort;
 
+		$showheader = 0;
+		if(isset($Post->showheader)){
+			$showheader = 1;
+		}
+		$showfooter = 0;
+		if(isset($Post->showfooter)){
+			$showfooter = 1;
+		}
 
 		$shortname = $PageInfo->shortname;
 		$new_shortname = $Core->slugify($title);
@@ -125,6 +144,8 @@ $Route->add('/ajax/{cmd}', function ($cmd) {
 			"title" => $title,
 			"menutitle" => $menutitle,
 			"sort" => $sort,
+			"showheader" => $showheader,
+			"showfooter" => $showfooter,
 			"photo" => $photos
 		]);
 
